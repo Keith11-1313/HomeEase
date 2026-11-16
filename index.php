@@ -1,459 +1,255 @@
-<<<<<<< HEAD
 <?php
-// ============================================================
-// index.php — HomeEase Landing Page (Guest / Public)
-// ============================================================
-// This is the first page anyone sees.  It shows a hero
-// section, feature highlights, and links to browse units
-// and FAQs.  No self-registration — admin creates accounts.
-// ============================================================
+require_once __DIR__ . '/lib/bootstrap.php';
 
-session_start();
+$units    = units_published();
+$faqs     = array_slice(faqs_published(), 0, 5);
+$steps    = parse_pairs(setting('booking_steps'));
+$result   = parse_pairs(setting('booking_result'))[0] ?? ['You hold the slot', '₱500 only'];
+$hero     = lines(setting('hero_title'));
+$cta      = lines(setting('cta_title'));
+$from     = price_from();
+$messenger = setting('messenger_url', 'https://m.me/');
+$nbPhotos  = random_gallery_images(4);
+
+$page_title = setting('brand_name', APP_NAME);
+$page_desc  = setting('hero_support');
+include __DIR__ . '/includes/public_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HomeEase — Apartment Management System</title>
-    <meta name="description"
-          content="HomeEase is a digital apartment management system for small-scale owners. Browse units, manage payments, and submit maintenance tickets easily.">
-    <link rel="stylesheet" href="/Apartment Management System/assets/css/style.css">
-</head>
-<body>
 
-<!-- ====================================================
-     NAVIGATION BAR (fixed at top)
-     ==================================================== -->
-<nav class="landing-nav">
-    <div class="logo">
-        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
-             alt="HomeEase Logo"
-             style="filter:invert(1);">
-        <h2>Home<span>Ease</span></h2>
-    </div>
-    <ul class="nav-links">
-        <li><a href="#features">Features</a></li>
-        <li>
-            <a href="/Apartment Management System/units_browse.php">
-                Browse Units
-            </a>
-        </li>
-        <li>
-            <a href="/Apartment Management System/faq.php">
-                FAQs
-            </a>
-        </li>
-
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <!-- User is logged in — show dashboard link -->
-            <?php if ($_SESSION['role'] === 'admin'): ?>
-                <li>
-                    <a href="/Apartment Management System/admin/dashboard.php"
-                       class="btn btn-primary btn-sm">Dashboard</a>
-                </li>
-            <?php
-    else: ?>
-                <li>
-                    <a href="/Apartment Management System/tenant/dashboard.php"
-                       class="btn btn-primary btn-sm">Dashboard</a>
-                </li>
-            <?php
-    endif; ?>
-        <?php
-else: ?>
-            <!-- Not logged in — show login only -->
-            <li>
-                <a href="/Apartment Management System/login.php"
-                   class="btn btn-primary btn-sm">Sign In</a>
-            </li>
-        <?php
-endif; ?>
-    </ul>
-</nav>
-
-
-<!-- ====================================================
-     HERO SECTION
-     ==================================================== -->
 <section class="hero">
-    <div class="hero-content">
-        <h1>
-            Modern Apartment<br>
-            Management,<br>
-            <span>Made Simple.</span>
+    <div class="wrap hero-inner">
+        <p class="hero-kicker"><?= icon('pin') ?> Fairview, Quezon City <span aria-hidden="true">·</span> 12-hour stays</p>
+
+        <h1 class="hero-logo">
+            <span class="hero-word"><?= e($hero[0] ?? "Flynn's Cozy") ?></span>
+            <span class="hero-emblem"><?= logo_mark() ?></span>
+            <span class="hero-word hero-word--last"><?= e($hero[1] ?? 'Staycation.') ?></span>
         </h1>
-        <p>
-            HomeEase replaces paper-based logging with a digital
-            ledger.  Track payments, manage maintenance tickets,
-            and keep your tenants happy — all from one dashboard.
+
+        <p class="hero-tagline">Airbnb / Transient</p>
+
+        <div class="hero-foot">
+            <p class="hero-support"><?= e(setting('hero_support')) ?></p>
+            <div class="hero-actions">
+                <a class="btn" href="<?= e($messenger) ?>" target="_blank" rel="noopener"><?= icon('messenger') ?> Message us</a>
+                <a class="btn btn--ghost" href="<?= e(url('rooms.php')) ?>"><?= icon('arrow-right') ?> See the rooms</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-rail" aria-label="Stay essentials">
+        <div class="wrap hero-rail-inner">
+            <span><?= icon('moon') ?> Overnight · 7pm–7am</span>
+            <span><?= icon('sun') ?> Daycation · 7am–7pm</span>
+            <span><?= icon('users') ?> 2 pax included</span>
+            <span><?= icon('car') ?> Parking on request</span>
+        </div>
+    </div>
+</section>
+
+<section class="chapter showcase" id="stays">
+    <div class="wrap">
+        <div class="chapter-head reveal">
+                <h2>Stay your way, day or night</h2>
+            <p>Every stay is a twelve-hour slot. Take the night from 7pm to 7am, or the day from 7am to 7pm. Rates change with the day and the room; both slots include two pax, air conditioning and the run of the studio.</p>
+        </div>
+
+        <div class="specimens">
+            <figure class="specimen specimen--night reveal">
+                <?= icon('moon') ?>
+                <b>Overnight</b>
+                <figcaption>7pm to 7am · settle in after dark</figcaption>
+            </figure>
+
+            <figure class="specimen specimen--day reveal" style="--d:90ms">
+                <?= icon('sun') ?>
+                <b>Daycation</b>
+                <figcaption>7am to 7pm · the studio for a day</figcaption>
+            </figure>
+        </div>
+    </div>
+</section>
+
+<section class="chapter chapter--surface" id="rooms">
+    <div class="wrap">
+        <div class="chapter-head reveal">
+                <h2><?= count($units) ?> cozy studios in Fairview</h2>
+            <p class="lead"><?= e(setting('rooms_intro')) ?></p>
+        </div>
+
+        <?php if ($units): ?>
+            <div class="room-index">
+                <?php foreach ($units as $unit): ?>
+                    <a class="reveal" href="<?= e(url('room.php?slug=' . urlencode($unit['slug']))) ?>">
+                        <h3><?= e($unit['name']) ?><span class="sr-only">, <?= e($unit['tagline']) ?></span></h3>
+                        <span class="room-facts">
+                            <?php foreach (unit_fact_items($unit) as $fact): ?>
+                                <span><?= icon($fact['icon']) ?><?= e($fact['text']) ?></span>
+                            <?php endforeach; ?>
+                        </span>
+                        <span class="room-from">
+                            from <?= e($unit['from_price'] !== null ? money($unit['from_price']) : 'ask') ?>
+                            <span>per 12 hours</span>
+                        </span>
+                        <span class="room-arrow" aria-hidden="true"><?= icon('arrow-up') ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="empty-state">
+                <span class="empty-state-label" aria-hidden="true">—</span>
+                <h2>Studios coming soon</h2>
+                <p>Message us to find out what's available this week.</p>
+                <a class="btn" href="<?= e($messenger) ?>" target="_blank" rel="noopener"><?= icon('messenger') ?> Message us</a>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>
+
+<section class="chapter chapter--field" id="how" data-field="dark">
+    <div class="wrap steps-grid">
+        <div class="chapter-head reveal">
+            <h2>Three messages, then you're in.</h2>
+            <p class="lead"><?= e(setting('contact_note')) ?> No forms, no accounts, no card details on this site.</p>
+        </div>
+
+        <div class="slip reveal" style="--d:90ms" data-field="dark">
+            <p class="slip-title">Your reservation</p>
+
+            <?php foreach ($steps as $stepIndex => [$label, $value]): ?>
+                <div class="slip-row">
+                    <span class="slip-label"><?= icon(['messenger', 'calendar', 'key'][$stepIndex] ?? 'check') ?><?= e($label) ?></span>
+                    <span class="slip-dots" aria-hidden="true"></span>
+                    <span class="slip-value"><?= e($value) ?></span>
+                </div>
+            <?php endforeach; ?>
+
+            <div class="slip-total">
+                <span><?= e($result[0]) ?></span>
+                <strong><?= e($result[1]) ?></strong>
+            </div>
+
+            <p class="slip-note">Check-in window <?= e(setting('checkin_window')) ?>. The passcode is sent once the balance is settled.</p>
+        </div>
+    </div>
+</section>
+
+<section class="chapter pricing" id="pricing">
+    <div class="wrap">
+        <p class="price-sentence reveal">
+            Twelve hours<br>
+            from <span class="price-mark"><?= e(money($from)) ?></span>.
         </p>
-        <div class="hero-buttons">
-            <a href="/Apartment Management System/units_browse.php"
-               class="btn btn-primary">
-                <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png"
-                     alt="Browse">
-                Browse Units
-            </a>
-            <a href="/Apartment Management System/login.php"
-               class="btn btn-outline">
-                <img src="https://cdn-icons-png.flaticon.com/512/159/159616.png"
-                     alt="Login"
-                     style="filter:invert(1);">
-                Sign In
-            </a>
+
+        <div class="pricing-foot reveal" style="--d:90ms">
+            <p><?= e(setting('pricing_note')) ?></p>
+            <div class="pricing-actions">
+                <a class="btn" href="<?= e(url('rooms.php')) ?>"><?= icon('arrow-right') ?> Price a stay</a>
+                <a class="text-link" href="<?= e(url('rooms.php')) ?>">See every rate</a>
+            </div>
         </div>
     </div>
 </section>
 
+<section class="chapter neighbourhood" id="location">
+    <div class="wrap">
+        <div class="nb-grid">
+            <div class="nb-copy reveal">
+                <h2>Your Fairview staycation</h2>
+                <p class="lead">Two residences a few minutes from SM Fairview and Ayala Terraces, with tricycles and jeepneys at the gate.</p>
 
-<!-- ====================================================
-     FEATURES SECTION
-     ==================================================== -->
-<section class="section" id="features">
-    <div class="section-header">
-        <h2>Everything You Need</h2>
-        <p>From payment tracking to maintenance requests,
-           HomeEase covers the essentials of apartment management.</p>
+                <dl class="nb-facts">
+                    <div><dt><?= icon('pin') ?> Address</dt><dd><?= e(setting('address')) ?></dd></div>
+                    <div><dt><?= icon('building') ?> Landmarks</dt><dd><?= e(setting('landmarks')) ?></dd></div>
+                    <div><dt><?= icon('clock') ?> Check-in</dt><dd><?= e(setting('checkin_window')) ?></dd></div>
+                </dl>
+            </div>
+
+            <?php if (isset($nbPhotos[0])): ?>
+                <figure class="nb-figure reveal" style="--d:80ms">
+                    <img src="<?= e(drive_image_url($nbPhotos[0]['url'])) ?>"
+                         alt="<?= e($nbPhotos[0]['caption'] ?: $nbPhotos[0]['unit_name']) ?>"
+                         loading="lazy">
+                </figure>
+            <?php else: ?>
+                <div class="nb-figure nb-figure--empty reveal" style="--d:80ms">
+                    <?= icon('camera') ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="nb-maps reveal">
+            <figure class="nb-map">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1622.3379755548124!2d121.06017385415817!3d14.735659685767839!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b1000bae4fa1%3A0x7de46669f7a288b1!2sTrees%20Residences%20Fairview!5e0!3m2!1sen!2sph!4v1794460481034!5m2!1sen!2sph"
+                        loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <figcaption>Trees Residences, Fairview</figcaption>
+            </figure>
+            <figure class="nb-map">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1622.3379755548124!2d121.06017385415817!3d14.735659685767839!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b06844bcbdbb%3A0x100f2217aea4e215!2sMilan%20Residenze%20Fairview!5e0!3m2!1sen!2sph!4v1794460529018!5m2!1sen!2sph"
+                        loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <figcaption>Milan Residenze, Fairview</figcaption>
+            </figure>
+        </div>
+
+        <?php if (isset($nbPhotos[1])): ?>
+            <figure class="nb-wide reveal">
+                <img src="<?= e(drive_image_url($nbPhotos[1]['url'])) ?>"
+                     alt="<?= e($nbPhotos[1]['caption'] ?: $nbPhotos[1]['unit_name']) ?>"
+                     loading="lazy">
+            </figure>
+        <?php endif; ?>
+
+        <?php if (isset($nbPhotos[2]) || isset($nbPhotos[3])): ?>
+            <div class="nb-pair">
+                <?php if (isset($nbPhotos[2])): ?>
+                    <figure class="reveal">
+                        <img src="<?= e(drive_image_url($nbPhotos[2]['url'])) ?>"
+                             alt="<?= e($nbPhotos[2]['caption'] ?: $nbPhotos[2]['unit_name']) ?>"
+                             loading="lazy">
+                    </figure>
+                <?php endif; ?>
+                <?php if (isset($nbPhotos[3])): ?>
+                    <figure class="reveal" style="--d:90ms">
+                        <img src="<?= e(drive_image_url($nbPhotos[3]['url'])) ?>"
+                             alt="<?= e($nbPhotos[3]['caption'] ?: $nbPhotos[3]['unit_name']) ?>"
+                             loading="lazy">
+                    </figure>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
     </div>
+</section>
 
-    <div class="features-grid">
-        <!-- Feature 1: Payment Tracking -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/138/138389.png"
-                     alt="Payments">
-            </div>
-            <h3>Payment Tracking</h3>
-            <p>Tenants submit payments digitally.  Admins verify
-               each transaction and keep a complete financial
-               history.</p>
+<?php if ($faqs): ?>
+<section class="chapter chapter--surface" id="faq">
+    <div class="wrap faq-layout">
+        <h2 class="reveal">The things people ask.</h2>
+
+        <div class="faq-list reveal" style="--d:80ms">
+            <?php foreach ($faqs as $faq): ?>
+                <details class="faq">
+                    <summary><?= e($faq['question']) ?></summary>
+                    <p><?= nl2br(e($faq['answer'])) ?></p>
+                </details>
+            <?php endforeach; ?>
+
+            <p style="margin-top:2.2rem">
+                <a class="text-link" href="<?= e(url('faq.php')) ?>">All questions</a>
+            </p>
         </div>
+    </div>
+</section>
+<?php endif; ?>
 
-        <!-- Feature 2: Maintenance Tickets -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/503/503849.png"
-                     alt="Tickets">
-            </div>
-            <h3>Maintenance Tickets</h3>
-            <p>Report issues with a few clicks.  Track progress
-               from Pending to In Progress to Resolved — with
-               full history.</p>
-        </div>
+<section class="chapter chapter--ink cta" id="reserve" data-field="dark">
+    <div class="wrap">
+        <h2 class="reveal"><?= e($cta[0] ?? 'Take the night,') ?><br><?= e($cta[1] ?? 'or take the day.') ?></h2>
 
-        <!-- Feature 3: Unit Management -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
-                     alt="Units">
-            </div>
-            <h3>Unit Management</h3>
-            <p>List all apartments, mark them vacant or occupied,
-               and assign tenants.  Guests can browse available
-               units online.</p>
-        </div>
-
-        <!-- Feature 4: Notifications -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/60/60753.png"
-                     alt="Notifications">
-            </div>
-            <h3>Smart Notifications</h3>
-            <p>In-app reminders for overdue payments, ticket
-               updates, and system announcements keep everyone
-               informed.</p>
-        </div>
-
-        <!-- Feature 5: Audit Logs -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/751/751381.png"
-                     alt="Audit Logs">
-            </div>
-            <h3>Audit Trail</h3>
-            <p>Every update and delete is logged automatically.
-               View the history or export it as a PDF for your
-               records.</p>
-        </div>
-
-        <!-- Feature 6: Role-Based Access -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"
-                     alt="Roles">
-            </div>
-            <h3>Role-Based Access</h3>
-            <p>Admins, tenants, and guests each see only what
-               they need.  Secure, organised, and hassle-free.</p>
+        <div class="cta-foot reveal" style="--d:90ms">
+            <p><?= e(setting('cta_note')) ?></p>
+            <a class="btn btn--accent" href="<?= e($messenger) ?>" target="_blank" rel="noopener"><?= icon('messenger') ?> Message us</a>
         </div>
     </div>
 </section>
 
-
-<!-- ====================================================
-     CONTACT SECTION
-     ==================================================== -->
-<section class="section" style="padding-bottom:60px;">
-    <div class="section-header">
-        <h2>Interested?</h2>
-        <p>Contact the building owner to inquire about units
-           or request an account.</p>
-    </div>
-    <div style="text-align:center;max-width:400px;margin:0 auto;">
-        <div style="padding:28px 24px;background:var(--color-bg-card);border:1px solid var(--color-border);border-radius:var(--radius-md);">
-            <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png"
-                 alt="Email"
-                 style="width:32px;height:32px;filter:invert(1);opacity:0.5;margin-bottom:12px;">
-            <h3 style="margin-bottom:8px;font-size:1.1rem;">Email the Owner</h3>
-            <a href="mailto:admin@homeease.com"
-               style="font-size:1rem;font-weight:600;color:var(--color-accent);">
-               admin@homeease.com
-            </a>
-        </div>
-    </div>
-</section>
-
-
-<!-- ====================================================
-     FOOTER
-     ==================================================== -->
-<footer class="landing-footer">
-    <p>&copy; <?php echo date('Y'); ?> HomeEase.
-       Apartment Management System. All rights reserved.</p>
-</footer>
-
-<script src="/Apartment Management System/assets/js/main.js"></script>
-</body>
-</html>
-=======
-<?php
-// ============================================================
-// index.php — HomeEase Landing Page (Guest / Public)
-// ============================================================
-// This is the first page anyone sees.  It shows a hero
-// section, feature highlights, and links to browse units
-// and FAQs.  No self-registration — admin creates accounts.
-// ============================================================
-
-session_start();
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HomeEase — Apartment Management System</title>
-    <meta name="description"
-          content="HomeEase is a digital apartment management system for small-scale owners. Browse units, manage payments, and submit maintenance tickets easily.">
-    <link rel="stylesheet" href="/Apartment Management System/assets/css/style.css">
-</head>
-<body>
-
-<!-- ====================================================
-     NAVIGATION BAR (fixed at top)
-     ==================================================== -->
-<nav class="landing-nav">
-    <div class="logo">
-        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
-             alt="HomeEase Logo"
-             style="filter:invert(1);">
-        <h2>Home<span>Ease</span></h2>
-    </div>
-    <ul class="nav-links">
-        <li><a href="#features">Features</a></li>
-        <li>
-            <a href="/Apartment Management System/units_browse.php">
-                Browse Units
-            </a>
-        </li>
-        <li>
-            <a href="/Apartment Management System/faq.php">
-                FAQs
-            </a>
-        </li>
-
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <!-- User is logged in — show dashboard link -->
-            <?php if ($_SESSION['role'] === 'admin'): ?>
-                <li>
-                    <a href="/Apartment Management System/admin/dashboard.php"
-                       class="btn btn-primary btn-sm">Dashboard</a>
-                </li>
-            <?php
-    else: ?>
-                <li>
-                    <a href="/Apartment Management System/tenant/dashboard.php"
-                       class="btn btn-primary btn-sm">Dashboard</a>
-                </li>
-            <?php
-    endif; ?>
-        <?php
-else: ?>
-            <!-- Not logged in — show login only -->
-            <li>
-                <a href="/Apartment Management System/login.php"
-                   class="btn btn-primary btn-sm">Sign In</a>
-            </li>
-        <?php
-endif; ?>
-    </ul>
-</nav>
-
-
-<!-- ====================================================
-     HERO SECTION
-     ==================================================== -->
-<section class="hero">
-    <div class="hero-content">
-        <h1>
-            Modern Apartment<br>
-            Management,<br>
-            <span>Made Simple.</span>
-        </h1>
-        <p>
-            HomeEase replaces paper-based logging with a digital
-            ledger.  Track payments, manage maintenance tickets,
-            and keep your tenants happy — all from one dashboard.
-        </p>
-        <div class="hero-buttons">
-            <a href="/Apartment Management System/units_browse.php"
-               class="btn btn-primary">
-                <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png"
-                     alt="Browse">
-                Browse Units
-            </a>
-            <a href="/Apartment Management System/login.php"
-               class="btn btn-outline">
-                <img src="https://cdn-icons-png.flaticon.com/512/159/159616.png"
-                     alt="Login"
-                     style="filter:invert(1);">
-                Sign In
-            </a>
-        </div>
-    </div>
-</section>
-
-
-<!-- ====================================================
-     FEATURES SECTION
-     ==================================================== -->
-<section class="section" id="features">
-    <div class="section-header">
-        <h2>Everything You Need</h2>
-        <p>From payment tracking to maintenance requests,
-           HomeEase covers the essentials of apartment management.</p>
-    </div>
-
-    <div class="features-grid">
-        <!-- Feature 1: Payment Tracking -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/138/138389.png"
-                     alt="Payments">
-            </div>
-            <h3>Payment Tracking</h3>
-            <p>Tenants submit payments digitally.  Admins verify
-               each transaction and keep a complete financial
-               history.</p>
-        </div>
-
-        <!-- Feature 2: Maintenance Tickets -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/503/503849.png"
-                     alt="Tickets">
-            </div>
-            <h3>Maintenance Tickets</h3>
-            <p>Report issues with a few clicks.  Track progress
-               from Pending to In Progress to Resolved — with
-               full history.</p>
-        </div>
-
-        <!-- Feature 3: Unit Management -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
-                     alt="Units">
-            </div>
-            <h3>Unit Management</h3>
-            <p>List all apartments, mark them vacant or occupied,
-               and assign tenants.  Guests can browse available
-               units online.</p>
-        </div>
-
-        <!-- Feature 4: Notifications -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/60/60753.png"
-                     alt="Notifications">
-            </div>
-            <h3>Smart Notifications</h3>
-            <p>In-app reminders for overdue payments, ticket
-               updates, and system announcements keep everyone
-               informed.</p>
-        </div>
-
-        <!-- Feature 5: Audit Logs -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/751/751381.png"
-                     alt="Audit Logs">
-            </div>
-            <h3>Audit Trail</h3>
-            <p>Every update and delete is logged automatically.
-               View the history or export it as a PDF for your
-               records.</p>
-        </div>
-
-        <!-- Feature 6: Role-Based Access -->
-        <div class="feature-card">
-            <div class="icon-wrap">
-                <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"
-                     alt="Roles">
-            </div>
-            <h3>Role-Based Access</h3>
-            <p>Admins, tenants, and guests each see only what
-               they need.  Secure, organised, and hassle-free.</p>
-        </div>
-    </div>
-</section>
-
-
-<!-- ====================================================
-     CONTACT SECTION
-     ==================================================== -->
-<section class="section" style="padding-bottom:60px;">
-    <div class="section-header">
-        <h2>Interested?</h2>
-        <p>Contact the building owner to inquire about units
-           or request an account.</p>
-    </div>
-    <div style="text-align:center;max-width:400px;margin:0 auto;">
-        <div style="padding:28px 24px;background:var(--color-bg-card);border:1px solid var(--color-border);border-radius:var(--radius-md);">
-            <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png"
-                 alt="Email"
-                 style="width:32px;height:32px;filter:invert(1);opacity:0.5;margin-bottom:12px;">
-            <h3 style="margin-bottom:8px;font-size:1.1rem;">Email the Owner</h3>
-            <a href="mailto:admin@homeease.com"
-               style="font-size:1rem;font-weight:600;color:var(--color-accent);">
-               admin@homeease.com
-            </a>
-        </div>
-    </div>
-</section>
-
-
-<!-- ====================================================
-     FOOTER
-     ==================================================== -->
-<footer class="landing-footer">
-    <p>&copy; <?php echo date('Y'); ?> HomeEase.
-       Apartment Management System. All rights reserved.</p>
-</footer>
-
-<script src="/Apartment Management System/assets/js/main.js"></script>
-</body>
-</html>
->>>>>>> 047237f57cd0fd2e115602c620d70bf3bd6e29a0
+<?php include __DIR__ . '/includes/public_footer.php'; ?>

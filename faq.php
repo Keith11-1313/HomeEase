@@ -1,189 +1,54 @@
-<<<<<<< HEAD
 <?php
-// ============================================================
-// faq.php — Public FAQ Page (Accordion)
-// ============================================================
-// Displays frequently asked questions from the `faqs` table
-// in an accordion layout.  Anyone can view this page.
-// ============================================================
+require_once __DIR__ . '/lib/bootstrap.php';
 
-session_start();
-require_once 'db_connect.php';
+$faqs = faqs_published();
 
-// Fetch all active FAQs, ordered by display_order.
-$query = "SELECT * FROM `faqs` WHERE `is_active` = 1 ORDER BY `display_order` ASC";
-$result = mysqli_query($conn, $query);
+$page_title = 'FAQs';
+$page_desc  = 'Reservation, check-in, deposit, parking and pool questions answered.';
+$active     = 'faqs';
+include __DIR__ . '/includes/public_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQs — HomeEase</title>
-    <meta name="description" content="Frequently asked questions about HomeEase Apartment Management System.">
-    <link rel="stylesheet" href="/Apartment Management System/assets/css/style.css">
-</head>
-<body>
 
-<!-- Top navigation bar -->
-<nav class="landing-nav">
-    <div class="logo">
-        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
-             alt="HomeEase Logo"
-             style="filter:invert(1);">
-        <h2>Home<span>Ease</span></h2>
-    </div>
-    <ul class="nav-links">
-        <li><a href="/Apartment Management System/index.php">Home</a></li>
-        <li><a href="/Apartment Management System/units_browse.php">Browse Units</a></li>
-        <li><a href="/Apartment Management System/faq.php" style="color:var(--color-text);">FAQs</a></li>
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <li>
-                <a href="/Apartment Management System/<?php echo($_SESSION['role'] === 'admin') ? 'admin' : 'tenant'; ?>/dashboard.php"
-                   class="btn btn-primary btn-sm">Dashboard</a>
-            </li>
-        <?php
-else: ?>
-            <li><a href="/Apartment Management System/login.php" class="btn btn-primary btn-sm">Sign In</a></li>
-        <?php
-endif; ?>
-    </ul>
-</nav>
+<section class="page-head wrap">
+    <p class="page-kicker"><?= icon('check-circle') ?> Good to know</p>
+    <h1>Before you book</h1>
+    <p class="lead">Downpayments, check-in, the deposit, parking and the pool — answered the way we answer them in chat.</p>
+</section>
 
-<div class="section" style="padding-top: 120px;">
-    <div class="section-header">
-        <h2>Frequently Asked Questions</h2>
-        <p>Find answers to common questions about living in and
-           managing our apartments.</p>
-    </div>
+<?php if ($faqs): ?>
+    <section class="chapter faq-page-list">
+        <div class="wrap faq-layout">
+            <h2 class="reveal">Questions, in full.</h2>
 
-    <?php if (mysqli_num_rows($result) > 0): ?>
-    <div class="faq-list">
-        <?php while ($faq = mysqli_fetch_assoc($result)): ?>
-        <div class="faq-item">
-            <!-- The question button toggles the answer panel -->
-            <button class="faq-question">
-                <?php echo htmlspecialchars($faq['question']); ?>
-                <span class="arrow">&#9660;</span>
-            </button>
-            <!-- Answer panel (hidden by default via CSS max-height: 0) -->
-            <div class="faq-answer">
-                <p><?php echo htmlspecialchars($faq['answer']); ?></p>
+            <div class="faq-list reveal" style="--d:80ms">
+                <?php foreach ($faqs as $faq): ?>
+                    <details class="faq">
+                        <summary><?= e($faq['question']) ?></summary>
+                        <p><?= nl2br(e($faq['answer'])) ?></p>
+                    </details>
+                <?php endforeach; ?>
             </div>
         </div>
-        <?php
-    endwhile; ?>
-    </div>
-    <?php
-else: ?>
-    <div class="empty-state">
-        <img src="https://cdn-icons-png.flaticon.com/512/157/157933.png" alt="No FAQs">
-        <h3>No FAQs Available</h3>
-        <p>Check back later for frequently asked questions.</p>
-    </div>
-    <?php
-endif; ?>
-</div>
-
-<footer class="landing-footer">
-    <p>&copy; <?php echo date('Y'); ?> HomeEase. All rights reserved.</p>
-</footer>
-
-<script src="/Apartment Management System/assets/js/main.js"></script>
-</body>
-</html>
-=======
-<?php
-// ============================================================
-// faq.php — Public FAQ Page (Accordion)
-// ============================================================
-// Displays frequently asked questions from the `faqs` table
-// in an accordion layout.  Anyone can view this page.
-// ============================================================
-
-session_start();
-require_once 'db_connect.php';
-
-// Fetch all active FAQs, ordered by display_order.
-$query = "SELECT * FROM `faqs` WHERE `is_active` = 1 ORDER BY `display_order` ASC";
-$result = mysqli_query($conn, $query);
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQs — HomeEase</title>
-    <meta name="description" content="Frequently asked questions about HomeEase Apartment Management System.">
-    <link rel="stylesheet" href="/Apartment Management System/assets/css/style.css">
-</head>
-<body>
-
-<!-- Top navigation bar -->
-<nav class="landing-nav">
-    <div class="logo">
-        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
-             alt="HomeEase Logo"
-             style="filter:invert(1);">
-        <h2>Home<span>Ease</span></h2>
-    </div>
-    <ul class="nav-links">
-        <li><a href="/Apartment Management System/index.php">Home</a></li>
-        <li><a href="/Apartment Management System/units_browse.php">Browse Units</a></li>
-        <li><a href="/Apartment Management System/faq.php" style="color:var(--color-text);">FAQs</a></li>
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <li>
-                <a href="/Apartment Management System/<?php echo($_SESSION['role'] === 'admin') ? 'admin' : 'tenant'; ?>/dashboard.php"
-                   class="btn btn-primary btn-sm">Dashboard</a>
-            </li>
-        <?php
-else: ?>
-            <li><a href="/Apartment Management System/login.php" class="btn btn-primary btn-sm">Sign In</a></li>
-        <?php
-endif; ?>
-    </ul>
-</nav>
-
-<div class="section" style="padding-top: 120px;">
-    <div class="section-header">
-        <h2>Frequently Asked Questions</h2>
-        <p>Find answers to common questions about living in and
-           managing our apartments.</p>
-    </div>
-
-    <?php if (mysqli_num_rows($result) > 0): ?>
-    <div class="faq-list">
-        <?php while ($faq = mysqli_fetch_assoc($result)): ?>
-        <div class="faq-item">
-            <!-- The question button toggles the answer panel -->
-            <button class="faq-question">
-                <?php echo htmlspecialchars($faq['question']); ?>
-                <span class="arrow">&#9660;</span>
-            </button>
-            <!-- Answer panel (hidden by default via CSS max-height: 0) -->
-            <div class="faq-answer">
-                <p><?php echo htmlspecialchars($faq['answer']); ?></p>
-            </div>
+    </section>
+<?php else: ?>
+    <div class="wrap">
+        <div class="empty-state">
+            <span class="empty-state-label" aria-hidden="true">—</span>
+            <h2>No FAQs yet</h2>
+            <p>Questions and answers are being added. Send yours on Messenger.</p>
+            <a class="btn" href="<?= e(setting('messenger_url', 'https://m.me/')) ?>" target="_blank" rel="noopener"><?= icon('messenger') ?> Ask directly</a>
         </div>
-        <?php
-    endwhile; ?>
     </div>
-    <?php
-else: ?>
-    <div class="empty-state">
-        <img src="https://cdn-icons-png.flaticon.com/512/157/157933.png" alt="No FAQs">
-        <h3>No FAQs Available</h3>
-        <p>Check back later for frequently asked questions.</p>
+<?php endif; ?>
+
+<section class="chapter chapter--ink cta faq-cta" data-field="dark">
+    <div class="wrap">
+        <h2 class="reveal">Still deciding?</h2>
+        <div class="cta-foot reveal" style="--d:80ms">
+            <p>Send the date and the room you like. We will confirm availability and the exact total.</p>
+            <a class="btn btn--accent" href="<?= e(setting('messenger_url', 'https://m.me/')) ?>" target="_blank" rel="noopener"><?= icon('messenger') ?> Message us</a>
+        </div>
     </div>
-    <?php
-endif; ?>
-</div>
+</section>
 
-<footer class="landing-footer">
-    <p>&copy; <?php echo date('Y'); ?> HomeEase. All rights reserved.</p>
-</footer>
-
-<script src="/Apartment Management System/assets/js/main.js"></script>
-</body>
-</html>
->>>>>>> 047237f57cd0fd2e115602c620d70bf3bd6e29a0
+<?php include __DIR__ . '/includes/public_footer.php'; ?>
