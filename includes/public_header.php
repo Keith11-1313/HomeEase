@@ -53,7 +53,6 @@ $nav = [
                     Message us</a>
                 <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav"
                     aria-label="Open menu">
-                    <span class="nav-toggle-label">Menu</span>
                     <?= icon('menu') ?>
                 </button>
             </div>

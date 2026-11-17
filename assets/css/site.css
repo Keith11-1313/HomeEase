@@ -22,7 +22,7 @@
 
     --gutter: clamp(1.1rem, 4vw, 3.4rem);
     --max: 1280px;
-    --chapter-gap: clamp(4rem, 8vw, 8rem);
+    --chapter-gap: clamp(2.5rem, 6vw, 5.5rem);
 }
 
 * { box-sizing: border-box; }
@@ -47,14 +47,21 @@ body {
 img { display: block; max-width: 100%; height: auto; }
 .icon { width: 20px; height: 20px; }
 
-.availability-page { padding-top: clamp(3rem, 7vw, 6rem); padding-bottom: clamp(4rem, 8vw, 8rem); }
-.availability-page h1 { margin: .5rem 0 1rem; }
-.availability-page > .lead { max-width: 56ch; margin-bottom: 3rem; }
-.availability-calendar { margin-bottom: 3rem; }
-.availability-calendar h2 { display: flex; align-items: center; gap: .55rem; font-size: clamp(1.6rem, 3vw, 2.5rem); margin-bottom: 1.4rem; }
+.availability-page { padding-top: clamp(2rem, 5vw, 4.5rem); padding-bottom: clamp(3rem, 6vw, 6rem); }
+.availability-page h1 { margin: .4rem 0 .8rem; }
+.availability-page > .lead { max-width: 56ch; margin-bottom: 2rem; }
+.availability-calendar { margin-bottom: 2rem; }
+.availability-calendar h2 { display: flex; align-items: center; gap: .55rem; font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1rem; }
 /* Two months side by side, stacked on mobile */
 .avail-months { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem; }
 @media (max-width: 700px) { .avail-months { grid-template-columns: 1fr; } }
+@media (max-width: 480px) {
+    .calendar-grid { gap: .1rem; }
+    .calendar-day-label, .calendar-date { min-height: 44px; font-size: .78rem; }
+    .calendar-date.is-overnight,
+    .calendar-date.is-daycation { min-height: 44px; }
+    .cal-slot-label { font-size: .42rem; letter-spacing: 0; }
+}
 .avail-month-label { font-size: .95rem; font-weight: 700; letter-spacing: .01em; margin-bottom: .6rem; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .25rem; }
 .calendar-day-label, .calendar-date { display: grid; min-height: 56px; place-items: center; }
@@ -76,8 +83,8 @@ img { display: block; max-width: 100%; height: auto; }
 .avail-swatch--full { background: var(--ink); }
 .avail-swatch--announced { background: var(--surface); border: 1px solid var(--line); }
 /* Announcement cards */
-.availability-announcements { margin-bottom: 3rem; }
-.availability-announcements h2 { display: flex; align-items: center; gap: .55rem; font-size: clamp(1.6rem, 3vw, 2.5rem); margin-bottom: 1.2rem; }
+.availability-announcements { margin-bottom: 2rem; }
+.availability-announcements h2 { display: flex; align-items: center; gap: .55rem; font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1rem; }
 .avail-announcement { padding: 1rem 0; border-top: 1px solid var(--line); }
 .avail-announcement h3 { margin-bottom: .5rem; }
 .avail-announcement p { max-width: 72ch; }
@@ -312,7 +319,7 @@ p:last-child { margin-bottom: 0; }
     flex-direction: column;
     justify-content: space-between;
     min-height: 100svh;
-    padding-top: clamp(7rem, 14vh, 9rem);
+    padding-top: clamp(5.5rem, 11vh, 7.5rem);
     background: var(--bg);
 }
 
@@ -371,7 +378,7 @@ p:last-child { margin-bottom: 0; }
     align-items: flex-end;
     justify-content: space-between;
     gap: 2rem;
-    padding: clamp(2rem, 6vh, 4rem) 0 clamp(1.6rem, 4vh, 2.6rem);
+    padding: clamp(1.5rem, 4vh, 3rem) 0 clamp(1.2rem, 3vh, 2rem);
 }
 
 .hero-support {
@@ -577,7 +584,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 /* ---------- pricing sentence ---------- */
-.pricing { padding-bottom: 3rem; }
+.pricing { padding-bottom: 0; }
 
 .price-sentence {
     font-size: clamp(2.4rem, 7.4vw, 6.6rem);
@@ -610,7 +617,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 /* ---------- neighbourhood ---------- */
-.neighbourhood { padding-top: 3rem; }
+.neighbourhood { padding-top: 0; }
 
 .nb-grid {
     display: grid;
@@ -653,7 +660,7 @@ p:last-child { margin-bottom: 0; }
     line-height: 1.45;
 }
 
-.nb-wide { margin: clamp(3rem, 6vw, 5rem) 0 0; }
+.nb-wide { margin: clamp(2rem, 4vw, 3.5rem) 0 0; }
 .nb-wide img {
     width: 100%;
     aspect-ratio: 16 / 7;
@@ -661,7 +668,7 @@ p:last-child { margin-bottom: 0; }
     animation: drift 26s ease-in-out infinite alternate;
 }
 
-.nb-maps { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.6rem, 1.4vw, 1.2rem); margin: clamp(3rem, 6vw, 5rem) 0 0; }
+.nb-maps { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.6rem, 1.4vw, 1.2rem); margin: clamp(2rem, 4vw, 3.5rem) 0 0; }
 .nb-map { margin: 0; }
 .nb-map iframe { display: block; width: 100%; aspect-ratio: 4 / 3; border: 0; filter: grayscale(20%) contrast(1.05); }
 .nb-map figcaption {
@@ -749,13 +756,13 @@ p:last-child { margin-bottom: 0; }
 
 /* ---------- cta ---------- */
 .cta {
-    min-height: 76svh;
+    min-height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 4rem;
-    padding-top: clamp(4rem, 9vw, 8rem);
-    padding-bottom: clamp(2rem, 4vw, 3rem);
+    justify-content: flex-start;
+    gap: clamp(2rem, 4vw, 3rem);
+    padding-top: clamp(3.5rem, 7vw, 6rem);
+    padding-bottom: clamp(3rem, 6vw, 5rem);
 }
 .cta > .wrap { width: 100%; }
 .cta h2 {
@@ -771,7 +778,7 @@ p:last-child { margin-bottom: 0; }
     gap: 2rem;
     flex-wrap: wrap;
 }
-.cta-foot p { max-width: 40ch; opacity: .72; }
+.cta-foot p { max-width: 40ch; opacity: .72; margin: 0; }
 
 /* ---------- footer ---------- */
 .site-footer {
@@ -808,7 +815,7 @@ p:last-child { margin-bottom: 0; }
     align-items: flex-end;
     justify-content: space-between;
     gap: 2rem;
-    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    padding-bottom: clamp(1.5rem, 3vw, 2.4rem);
 }
 .footer-action { flex: 0 0 19rem; padding-bottom: .35rem; }
 .footer-action p { line-height: 1.55; margin-bottom: .8rem; color: rgba(234, 231, 223, .72); }
@@ -816,8 +823,8 @@ p:last-child { margin-bottom: 0; }
 .footer-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2rem 3rem;
-    padding-top: 1.75rem;
+    gap: 1.75rem 3rem;
+    padding-top: 1.4rem;
     border-top: 1px solid rgba(234, 231, 223, .22);
 }
 .footer-grid h3 {
@@ -826,7 +833,7 @@ p:last-child { margin-bottom: 0; }
     letter-spacing: .1em;
     text-transform: uppercase;
     color: rgba(234, 231, 223, .62);
-    margin-bottom: 1rem;
+    margin-bottom: .7rem;
 }
 .footer-grid p,
 .footer-grid a,
@@ -873,9 +880,8 @@ p:last-child { margin-bottom: 0; }
 .faq-cta h2 { font-size: clamp(2.4rem, 7vw, 6rem); }
 .gallery-section { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 .gallery-cta h2 { font-size: clamp(2.4rem, 7vw, 6rem); }
-
 /* ---------- inner page head ---------- */
-.page-head { padding-block: clamp(7.5rem, 13vw, 11rem) clamp(1.5rem, 3vw, 2.5rem); }
+.page-head { padding-block: clamp(5.5rem, 10vw, 8rem) clamp(1.2rem, 2.5vw, 2rem); }
 .page-head h1 { font-size: clamp(2.6rem, 8vw, 6.6rem); max-width: 14ch; letter-spacing: -.05em; }
 .page-head .lead { margin-top: 1.5rem; color: var(--muted); }
 .page-kicker {
@@ -938,7 +944,7 @@ p:last-child { margin-bottom: 0; }
     font-size: var(--step-small);
     font-weight: 600;
     color: var(--muted);
-    padding-top: 7.5rem;
+    padding-top: 5.5rem;
 }
 .crumbs a { display: inline-flex; align-items: center; gap: .3rem; }
 .crumbs a:hover { color: var(--ink); }
@@ -948,7 +954,7 @@ p:last-child { margin-bottom: 0; }
     grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
     gap: 2rem;
     align-items: end;
-    padding-block: clamp(1.6rem, 4vw, 3rem) clamp(1.6rem, 3vw, 2.4rem);
+    padding-block: clamp(1rem, 2.5vw, 2rem) clamp(1.2rem, 2.5vw, 1.8rem);
 }
 .room-head h1 { font-size: clamp(3rem, 8vw, 7rem); line-height: .86; letter-spacing: -.05em; }
 .room-head .room-tagline {
@@ -982,7 +988,7 @@ p:last-child { margin-bottom: 0; }
     letter-spacing: -.04em;
 }
 
-.room-media { padding-bottom: clamp(2rem, 4vw, 3rem); }
+.room-media { padding-bottom: clamp(1.5rem, 3vw, 2.5rem); }
 
 /* vertical photo grid — 2 col, natural ratio, no crop */
 .room-photo-strip {
@@ -1065,7 +1071,7 @@ p:last-child { margin-bottom: 0; }
     align-items: start;
     padding-bottom: var(--chapter-gap);
 }
-.room-main > section + section { margin-top: clamp(2.5rem, 5vw, 3.6rem); }
+.room-main > section + section { margin-top: clamp(2rem, 4vw, 3rem); }
 .room-main h2 { display: flex; align-items: center; gap: .55rem; font-size: clamp(1.7rem, 2.8vw, 2.4rem); margin-bottom: 1.2rem; }
 .room-main h2 .icon { width: 24px; height: 24px; }
 
@@ -1251,7 +1257,7 @@ p:last-child { margin-bottom: 0; }
 .gallery-section h2 { display: flex; align-items: center; gap: .55rem; font-size: clamp(1.8rem, 3.6vw, 2.8rem); margin-bottom: 1.2rem; }
 .gallery-section h2 .icon { width: 24px; height: 24px; }
 .gallery-section .bento-grid { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 200px; gap: 4px; }
-.gallery-group + .gallery-group { margin-top: clamp(2.5rem, 5vw, 3.6rem); }
+.gallery-group + .gallery-group { margin-top: clamp(2rem, 4vw, 3rem); }
 
 .room-video { margin: 1rem 0 0; }
 .room-video iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: var(--ink); }
@@ -1348,7 +1354,7 @@ p:last-child { margin-bottom: 0; }
     .nav-toggle { display: block; }
     .site-actions .btn { display: none; }
 
-    .hero { padding-top: 7rem; min-height: 92svh; }
+    .hero { padding-top: 5.5rem; min-height: 92svh; }
     .hero-logo { font-size: clamp(2.9rem, 13.5vw, 5.4rem); line-height: .84; }
     .hero-emblem { width: clamp(56px, 16vw, 84px); }
     .hero-tagline { font-size: .75rem; }
@@ -1381,14 +1387,25 @@ p:last-child { margin-bottom: 0; }
     .footer-grid { grid-template-columns: 1fr; gap: 1.5rem; }
     .footer-bottom { align-items: flex-start; }
     .footer-bottom nav { flex-wrap: wrap; }
-    .cta { min-height: 68svh; }
+    .cta { min-height: auto; }
     .cta h2 { font-size: 12vw; }
+    .cta-foot { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
     .cta-foot .btn { width: 100%; }
 
     .bento-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 160px; gap: 3px; }
     .bento-item--featured { grid-column: span 2; grid-row: span 2; }
     .bento-item--tall { grid-row: span 2; }
     .gallery-section .bento-grid { grid-template-columns: 1fr 1fr; }
+
+    /* availability calendar: smaller cells, hide time labels, show on hover/tap */
+    .avail-months { gap: 1rem; }
+    .calendar-grid { gap: .15rem; }
+    .cal-slot-label { font-size: .45rem; }
+    .cal-day-num { font-size: .65rem; }
+
+    /* room photos: cap first item height on mobile */
+    .room-photo-item:first-child { grid-column: span 2; }
+    .room-photo-item:first-child img { max-height: 56vw; object-fit: cover; width: 100%; height: auto; }
 
     .calc { padding: 1.2rem; }
     .room-head h1 { font-size: 16vw; }

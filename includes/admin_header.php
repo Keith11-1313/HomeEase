@@ -5,14 +5,14 @@ $admin = admin_user();
 $brand = setting('brand_name', APP_NAME);
 $active = $active ?? '';
 $nav = [
-    'index.php' => ['Dashboard', 'layout-dashboard'],
-    'rooms.php' => ['Rooms', 'bed'],
+    'index.php'     => ['Dashboard', 'layout-dashboard'],
+    'rooms.php'     => ['Rooms', 'bed'],
     'amenities.php' => ['Inclusions', 'check-circle'],
-    'rates.php' => ['Rates', 'calendar'],
-    'addons.php' => ['Add-ons', 'car'],
-    'faqs.php' => ['FAQs', 'mail'],
-    'calendar.php' => ['Availability', 'calendar'],
-    'settings.php' => ['Settings', 'shield'],
+    'rates.php'     => ['Rates', 'calendar'],
+    'addons.php'    => ['Add-ons', 'car'],
+    'faqs.php'      => ['FAQs', 'mail'],
+    'calendar.php'  => ['Availability', 'calendar'],
+    'settings.php'  => ['Settings', 'shield'],
 ];
 ?>
 <!DOCTYPE html>
@@ -34,17 +34,41 @@ $nav = [
 
 <body class="admin">
 
+    <!-- mobile top bar (hidden on desktop) -->
+    <header class="admin-topbar">
+        <a class="admin-brand" href="<?= e(url('admin/index.php')) ?>">
+            <?= logo_mark('admin-mark', 28) ?>
+            <span class="admin-brand-name"><?= e($brand) ?></span>
+        </a>
+        <button class="admin-burger" id="admin-burger" aria-label="Open menu" aria-expanded="false" aria-controls="admin-side">
+            <span></span><span></span><span></span>
+        </button>
+    </header>
+
+    <!-- overlay -->
+    <div class="admin-overlay" id="admin-overlay" hidden></div>
+
     <div class="admin-shell">
-        <aside class="admin-side">
-            <a class="admin-brand" href="<?= e(url('admin/index.php')) ?>">
+        <aside class="admin-side" id="admin-side">
+            <!-- desktop logo -->
+            <a class="admin-brand admin-brand--desk" href="<?= e(url('admin/index.php')) ?>">
                 <?= logo_mark('admin-mark', 34) ?>
                 <span class="admin-brand-text">
                     <span class="admin-brand-name"><?= e($brand) ?></span>
                     <span class="admin-brand-tag">Airbnb / Transient</span>
                 </span>
             </a>
-            <p class="admin-side-label">Content manager</p>
-
+            <!-- mobile drawer header -->
+            <div class="admin-side-top">
+                <a class="admin-brand" href="<?= e(url('admin/index.php')) ?>">
+                    <?= logo_mark('admin-mark', 34) ?>
+                    <span class="admin-brand-text">
+                        <span class="admin-brand-name"><?= e($brand) ?></span>
+                        <span class="admin-brand-tag">Airbnb / Transient</span>
+                    </span>
+                </a>
+                <button class="admin-side-close" id="admin-side-close" aria-label="Close menu">✕</button>
+            </div>
             <nav class="admin-nav">
                 <?php foreach ($nav as $file => [$label, $navIcon]): ?>
                     <a href="<?= e(url('admin/' . $file)) ?>" class="<?= $active === $file ? 'is-active' : '' ?>">
@@ -74,3 +98,7 @@ $nav = [
                 <?php foreach (take_flashes() as $flash): ?>
                     <div class="notice notice-<?= e($flash['type']) ?>"><?= e($flash['message']) ?></div>
                 <?php endforeach; ?>
+
+                <?php if (!empty($top_action)): ?>
+                    <div class="admin-fab"><?= $top_action ?></div>
+                <?php endif; ?>

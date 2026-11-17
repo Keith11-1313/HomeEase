@@ -59,7 +59,30 @@ document.addEventListener('DOMContentLoaded', () => {
         select.addEventListener('change', () => select.form?.requestSubmit());
     });
 
-    // ---- drag-to-reorder photo rows ----------------------------
+    // ---- admin burger menu -----------------------------------------
+    const burger  = document.getElementById('admin-burger');
+    const side    = document.getElementById('admin-side');
+    const overlay = document.getElementById('admin-overlay');
+    const sideClose = document.getElementById('admin-side-close');
+
+    if (burger && side) {
+        const openDrawer = () => {
+            side.classList.add('is-open');
+            burger.setAttribute('aria-expanded', 'true');
+            overlay?.removeAttribute('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+        const closeDrawer = () => {
+            side.classList.remove('is-open');
+            burger.setAttribute('aria-expanded', 'false');
+            overlay?.setAttribute('hidden', '');
+            document.body.style.overflow = '';
+        };
+        burger.addEventListener('click', openDrawer);
+        sideClose?.addEventListener('click', closeDrawer);
+        overlay?.addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+    }
     const photoList = document.getElementById('photo-list');
     if (photoList) {
         let dragging = null;

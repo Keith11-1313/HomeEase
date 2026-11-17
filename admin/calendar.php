@@ -120,7 +120,7 @@ include __DIR__ . '/../includes/admin_header.php';
     <?php foreach ($announcements as $a): ?>
         <form method="post" class="faq-edit">
             <?= csrf_field() ?><input type="hidden" name="action" value="announcement"><input type="hidden" name="id" value="<?= (int)$a['id'] ?>">
-            <label class="field"><span>Title</span><input name="title" value="<?= e($a['title']) ?>" maxlength="160" required></label>
+            <label class="field"><span>Title</span><input type="text" name="title" value="<?= e($a['title']) ?>" maxlength="160" required></label>
             <label class="field"><span>Announcement</span><textarea name="body" maxlength="2000"><?= e($a['body']) ?></textarea></label>
             <div class="grid-3">
                 <label class="field"><span>From</span><input type="date" name="start_date" value="<?= e($a['start_date'] ?? '') ?>"></label>
@@ -140,7 +140,7 @@ include __DIR__ . '/../includes/admin_header.php';
     <?php endforeach; ?>
     <form method="post" class="faq-edit">
         <?= csrf_field() ?><input type="hidden" name="action" value="announcement">
-        <label class="field"><span>Title</span><input name="title" maxlength="160" required></label>
+        <label class="field"><span>Title</span><input type="text" name="title" maxlength="160" required></label>
         <label class="field"><span>Announcement</span><textarea name="body" maxlength="2000"></textarea></label>
         <div class="grid-3">
             <label class="field"><span>From</span><input type="date" name="start_date"></label>

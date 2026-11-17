@@ -241,10 +241,14 @@ function recent_audit(int $limit = 20): array
 function dashboard_counts(): array
 {
     return [
-        'units'      => (int)db()->query('SELECT COUNT(*) FROM units')->fetchColumn(),
-        'published'  => (int)db()->query('SELECT COUNT(*) FROM units WHERE is_published')->fetchColumn(),
-        'photos'     => (int)db()->query('SELECT COUNT(*) FROM unit_photos')->fetchColumn(),
-        'faqs'       => (int)db()->query('SELECT COUNT(*) FROM faqs')->fetchColumn(),
-        'amenities'  => (int)db()->query('SELECT COUNT(*) FROM amenities')->fetchColumn(),
+        'units'          => (int)db()->query('SELECT COUNT(*) FROM units')->fetchColumn(),
+        'published'      => (int)db()->query('SELECT COUNT(*) FROM units WHERE is_published')->fetchColumn(),
+        'photos'         => (int)db()->query('SELECT COUNT(*) FROM unit_photos')->fetchColumn(),
+        'faqs'           => (int)db()->query('SELECT COUNT(*) FROM faqs WHERE is_published')->fetchColumn(),
+        'amenities'      => (int)db()->query('SELECT COUNT(*) FROM amenities')->fetchColumn(),
+        'no_photos'      => (int)db()->query('SELECT COUNT(*) FROM units WHERE is_published AND id NOT IN (SELECT DISTINCT unit_id FROM unit_photos WHERE media_type = \'image\')')->fetchColumn(),
+        'no_cover'       => (int)db()->query('SELECT COUNT(*) FROM units WHERE is_published AND id NOT IN (SELECT unit_id FROM unit_photos WHERE is_cover AND media_type = \'image\')')->fetchColumn(),
+        'blocked_soon'   => (int)db()->query('SELECT COUNT(*) FROM availability_blocks WHERE block_date BETWEEN CURRENT_DATE AND CURRENT_DATE + 14')->fetchColumn(),
+        'announcements'  => (int)db()->query('SELECT COUNT(*) FROM announcements WHERE is_published')->fetchColumn(),
     ];
 }
