@@ -1,1 +1,11 @@
 ErrorDocument 404 /404.php
+
+# Prevent directory browsing
+Options -Indexes
+
+# Block sensitive files and directories
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+RedirectMatch 404 ^/(db|scripts|tests|\.git)

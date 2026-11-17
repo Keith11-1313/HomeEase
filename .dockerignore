@@ -1,0 +1,5 @@
+.env
+.git
+.taste-skill/
+.phpunit.cache/
+
