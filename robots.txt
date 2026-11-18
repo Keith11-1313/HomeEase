@@ -1,0 +1,13 @@
+# Crawlers
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /db/
+Disallow: /scripts/
+Disallow: /tests/
+Disallow: /lib/
+Disallow: /includes/
+Disallow: /calculator.php
+
+Sitemap: /sitemap.xml
+
