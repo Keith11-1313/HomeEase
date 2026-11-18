@@ -15,7 +15,16 @@ function admin_user(): ?array
 function require_admin(): void
 {
     if (admin_user() === null) {
-        flash('error', 'Please sign in to continue.');
+        $alreadyQueued = false;
+        foreach ($_SESSION['flash'] ?? [] as $f) {
+            if (($f['message'] ?? '') === 'Please sign in to continue.') {
+                $alreadyQueued = true;
+                break;
+            }
+        }
+        if (!$alreadyQueued) {
+            flash('error', 'Please sign in to continue.');
+        }
         redirect('admin/login.php');
     }
 }
@@ -52,9 +61,66 @@ function login_throttled(): bool
     return ($attempts['count'] ?? 0) >= 5;
 }
 
-function attempt_login(string $email, string $password): bool
+function client_ip(): string
+{
+    $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
+    if ($forwarded !== '') {
+        $parts = explode(',', $forwarded);
+        return trim($parts[0]);
+    }
+    return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+}
+
+function login_throttle_key(string $email): string
+{
+    return hash('sha256', client_ip() . '|' . strtolower(trim($email)));
+}
+
+function login_is_throttled(string $email = ''): bool
 {
     if (login_throttled()) {
+        return true;
+    }
+    if ($email === '') {
+        return false;
+    }
+    $file = sys_get_temp_dir() . '/auth_throttle_' . login_throttle_key($email) . '.json';
+    if (!is_file($file)) {
+        return false;
+    }
+    $data = json_decode((string)file_get_contents($file), true);
+    if (!is_array($data) || ($data['started'] ?? 0) < time() - 900) {
+        @unlink($file);
+        return false;
+    }
+    return ($data['count'] ?? 0) >= 5;
+}
+
+function login_record_failure(string $email): void
+{
+    $_SESSION['login_attempts']['count'] = ($_SESSION['login_attempts']['count'] ?? 0) + 1;
+    $file = sys_get_temp_dir() . '/auth_throttle_' . login_throttle_key($email) . '.json';
+    $data = ['started' => time(), 'count' => 1];
+    if (is_file($file)) {
+        $existing = json_decode((string)file_get_contents($file), true);
+        if (is_array($existing) && ($existing['started'] ?? 0) >= time() - 900) {
+            $data['started'] = $existing['started'];
+            $data['count'] = ($existing['count'] ?? 0) + 1;
+        }
+    }
+    @file_put_contents($file, json_encode($data), LOCK_EX);
+}
+
+function login_clear_throttle(string $email): void
+{
+    unset($_SESSION['login_attempts']);
+    $file = sys_get_temp_dir() . '/auth_throttle_' . login_throttle_key($email) . '.json';
+    @unlink($file);
+}
+
+function attempt_login(string $email, string $password): bool
+{
+    if (login_is_throttled($email)) {
         return false;
     }
 
@@ -65,12 +131,13 @@ function attempt_login(string $email, string $password): bool
     $user = $stmt->fetch();
 
     if (!$user || !$user['is_active'] || !password_verify($password, $user['password_hash'])) {
-        $_SESSION['login_attempts']['count'] = ($_SESSION['login_attempts']['count'] ?? 0) + 1;
+        login_record_failure($email);
         return false;
     }
 
     session_regenerate_id(true);
-    unset($_SESSION['login_attempts']);
+    login_clear_throttle($email);
+    unset($_SESSION['flash']);
     $_SESSION['admin'] = [
         'id'           => (int)$user['id'],
         'email'        => $user['email'],
