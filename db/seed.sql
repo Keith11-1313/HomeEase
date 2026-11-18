@@ -117,9 +117,9 @@ INSERT INTO addons (code, label, amount, unit_label, category, description, sort
   ('extra_pax',  'Additional pax',         300.00, 'per pax',  'extra',
    'Adults and teens. Kids 11 and below stay free if no extra bedding is needed.', 20),
   ('parking_reserved_motor', 'Reserved parking — motor', 250.00, 'per stay', 'parking',
-   'Full payment with the downpayment. A slot is guaranteed.', 30),
+   'Paid in advance with the booking fee. A slot is guaranteed.', 30),
   ('parking_reserved_car',   'Reserved parking — car',   350.00, 'per stay', 'parking',
-   'Full payment with the downpayment. A slot is guaranteed.', 40),
+   'Paid in advance with the booking fee. A slot is guaranteed.', 40),
   ('parking_pay_motor',      'Pay parking — motor',       40.00, 'per stay', 'parking',
    'Outside the complex, first-come first-served.', 50),
   ('parking_pay_car',        'Pay parking — car',         60.00, 'per stay', 'parking',
@@ -170,25 +170,41 @@ ON CONFLICT (holiday_date) DO NOTHING;
 -- FAQs
 -- ============================================================
 INSERT INTO faqs (question, answer, sort_order) VALUES
-  ('How do I make a reservation?',
-   'Message us on Facebook Messenger. A ₱500 downpayment secures your slot. It serves as the security deposit and is refundable within the day after check-out if there are no damages, missing items, or violations. It cannot be transferred to a reschedule or another guest. Cancellations or reschedules made within 7 days of check-in are non-refundable, and the full booking amount is charged.', 10),
-  ('What time is check-in?',
-   'Our check-in window is 6:00 PM to 9:00 PM. The unit is self check-in: you receive a passcode once the balance has been settled.', 20),
-  ('What are the requirements?',
-   'One valid ID per guest, with a visible full name, photo, and date of birth.', 30),
-  ('How do I pay the balance?',
-   'The downpayment is paid online. The remaining balance is settled on check-in through our bank accounts. Please send the transfer screenshot manually rather than using the page''s automatic screenshot option. No balance, no passcode.', 40),
-  ('Is the security deposit refundable?',
-   'Yes. It is returned within the day after check-out, provided there are no damages, missing items, or violations.', 50),
-  ('Do children pay?',
-   'Kids 11 years old and below stay free as long as no additional bedding is required. Additional adults and teens are ₱300 per pax.', 60),
-  ('Is parking available?',
-   'Building parking is currently unavailable. You can book reserved parking near the building (motor ₱250, car ₱350, paid in full with the downpayment) or use pay parking outside the complex (motor ₱40, car ₱60, first-come first-served).', 70),
-  ('Is the pool included?',
-   'The pool is a separate fee. It is closed every Monday. Appropriate swimwear such as rashguards, wetsuits, cycling shorts, or board shorts is mandatory.', 80),
-  ('Can I extend my stay?',
-   'Yes, subject to availability. Additional hours are ₱180 each.', 90)
-ON CONFLICT (question) DO NOTHING;
+  ('Can we pay in cash?',
+   'We are self check-in, online payment only.', 10),
+  ('How can we get the key or passcode?',
+   'If you have paid in advance, we will send the passcode to you 5 minutes before check-in time.', 20),
+  ('Is it okay if we arrive late?',
+   'Yes, just let us know your estimated arrival time.', 30),
+  ('Is it okay if we don''t arrive at the same time?',
+   'No problem at all! Just follow the same check-in process.', 40),
+  ('Can I pay onsite for pool tickets?',
+   'Yes, but extra charges will apply.', 50),
+  ('Can we check out late?',
+   'Late check-out is not allowed unless you inform us in advance. Extensions are subject to availability. Please note that a ₱500 fee applies if check-out is delayed by more than 3 minutes.', 60),
+  ('When and how is the security deposit refunded?',
+   'Please wait for us to check the unit before the security deposit is released. We manage 5 units and inspect them in order; deposit release usually takes less than 2–3 hours. Refunds are sent via GCash, Maya, or BPI, provided there are no damages, missing items, or rule violations.', 70),
+  ('Can I cook in the unit?',
+   'Yes, light cooking is allowed. Please avoid strong-smelling foods (e.g., shrimp, tuyo, other seafood, curry) and oils (₱500 strong odor penalty).', 80),
+  ('Do you provide towels and toiletries?',
+   'Yes, basic towels and toiletries are provided.', 90),
+  ('Is the Wi-Fi free?',
+   'Yes, complimentary Wi-Fi is available in all units.', 100),
+  ('Can I have my food delivered via Grab or Foodpanda?',
+   'Yes! Please meet the delivery rider at the ground floor lobby.', 110),
+  ('Is there a curfew?',
+   'For noise: Loud noises, videoke, and karaoke should stop by 8:00 PM – 9:00 PM as courtesy to the neighbors. For going in and out of the building: No curfew.', 120),
+  ('Are pets and visitors allowed?',
+   'No pets allowed. Only pre-registered guests are permitted inside the unit; no unregistered visitors are allowed (₱1,000 penalty per unregistered guest).', 130),
+  ('Is smoking or vaping allowed?',
+   'Strictly no smoking or vaping inside the unit. This includes the use of tobacco, cannabis, vape, e-cigarettes, etc. Penalty: ₱3,500.', 140),
+  ('What are the cleanliness (CLAYGO) rules?',
+   'Maintain cleanliness at all times (clean as you go). Do not leave unwashed and oily dishes in the sink (Penalty: ₱500 for an untidy unit). Please dispose of trash properly in the building garbage room (Penalty: ₱250).', 150),
+  ('Can we have an in-room massage session?',
+   'Massage sessions are generally not allowed inside the unit as oils or liniments (such as Efficascent Oil) may stain bedsheets and mattresses, and leave a strong odor in the room (Penalty: ₱1,500).', 160),
+  ('How do I report a problem during my stay?',
+   'You can contact us via Facebook Messenger, and we will assist you promptly.', 170)
+ON CONFLICT (question) DO UPDATE SET answer = EXCLUDED.answer, sort_order = EXCLUDED.sort_order;
 
 
 -- ============================================================
@@ -206,14 +222,18 @@ INSERT INTO settings (key, value) VALUES
   ('contact_note',   'All reservations and payments are completed through Facebook Messenger.'),
   ('address',        'Fairview, Quezon City, Philippines, 1118'),
   ('landmarks',      'SM Fairview, Ayala Fairview Terraces, Robinson Novaliches'),
-  ('checkin_window', '6:00 PM – 9:00 PM'),
-  ('booking_steps',  'Message us on Messenger|Say the date, room and hours;Send the downpayment|₱500, refundable after check-out;Settle the balance on check-in|Passcode sent after payment'),
-  ('booking_result', 'You hold the slot|₱500 only'),
-  ('pricing_note',   'Weekday overnight, two pax included. Weekends and holidays cost a little more; extra hours, pax, parking and pool are quoted in the calculator. The refundable deposit comes back after check-out.'),
+  ('checkin_window', 'Overnight: 6:00 PM – 9:00 PM · Daycation: [CONFIRM_09]'),
+  ('checkin_overnight', '6:00 PM – 9:00 PM'),
+  ('checkin_daycation', '[CONFIRM_09: 7:00 AM – 9:00 AM]'),
+  ('checkout_overnight', '7:00 AM'),
+  ('checkout_daycation', '7:00 PM'),
+  ('booking_steps',  'Message us on Messenger|Say the date, room and slot;Send the booking fee|[CONFIRM_01] to hold the slot;Settle balance on arrival|Passcode sent after check-in payment'),
+  ('booking_result', 'You hold the slot|[CONFIRM_01] booking fee'),
+  ('pricing_note',   'Weekday overnight, two pax included. Weekends and holidays cost a little more; extra hours, pax, parking and pool are quoted in the calculator. The security deposit ([CONFIRM_02]) is refunded after check-out.'),
   ('cta_title',      E'Make it a cozy\nstaycation.'),
   ('cta_note',       'Message us with your dates; we reply with availability and the exact total.'),
   ('promo_note',     'Overnight promo: ₱1,350 for 2 pax (12 hours). Ask us on Messenger.')
-ON CONFLICT (key) DO NOTHING;
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 
 UPDATE settings SET value = 'Flynn''s Cozy Staycation'
 WHERE key = 'brand_name' AND value = 'Flynn''s Rate';
