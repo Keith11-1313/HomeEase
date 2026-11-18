@@ -182,6 +182,69 @@ function day_type_for(string $date): string
 }
 
 // --- content -------------------------------------------------
+function reviews_published(): array
+{
+    try {
+        return db()->query('SELECT * FROM reviews WHERE is_published ORDER BY sort_order, review_date DESC NULLS LAST, id DESC')->fetchAll();
+    } catch (Throwable) {
+        return [];
+    }
+}
+
+function reviews_all(): array
+{
+    try {
+        return db()->query('SELECT * FROM reviews ORDER BY sort_order, created_at DESC')->fetchAll();
+    } catch (Throwable) {
+        return [];
+    }
+}
+
+function standard_fees(): array
+{
+    static $fees = null;
+    if ($fees !== null) {
+        return $fees;
+    }
+    $addons = [];
+    foreach (addons_all(true) as $a) {
+        $addons[$a['code']] = (float)$a['amount'];
+    }
+
+    try {
+        $weekendDiffs = db()->query(
+            "SELECT r2.amount - r1.amount AS diff
+             FROM rates r1
+             JOIN rates r2 ON r1.unit_id = r2.unit_id AND r1.hours = r2.hours AND r1.slot_type = r2.slot_type
+             WHERE r1.day_type = 'weekday' AND r2.day_type = 'weekend_holiday' AND r1.hours = 12"
+        )->fetchAll(PDO::FETCH_COLUMN);
+    } catch (Throwable) {
+        $weekendDiffs = [];
+    }
+
+    $minDiff = !empty($weekendDiffs) ? min($weekendDiffs) : 50;
+    $maxDiff = !empty($weekendDiffs) ? max($weekendDiffs) : 100;
+    $surchargeStr = ($minDiff == $maxDiff) ? money($minDiff) : money($minDiff) . ' – ' . money($maxDiff);
+
+    try {
+        $poolAmounts = db()->query('SELECT amount FROM pool_rates')->fetchAll(PDO::FETCH_COLUMN);
+    } catch (Throwable) {
+        $poolAmounts = [];
+    }
+    $minPool = !empty($poolAmounts) ? min($poolAmounts) : 170;
+    $maxPool = !empty($poolAmounts) ? max($poolAmounts) : 350;
+    $poolStr = money($minPool) . ' – ' . money($maxPool);
+
+    $fees = [
+        'extra_pax'    => isset($addons['extra_pax']) ? money($addons['extra_pax']) . ' / pax' : '₱300 / pax',
+        'extra_hour'   => isset($addons['extra_hour']) ? money($addons['extra_hour']) . ' / hour' : '₱180 / hour',
+        'parking'      => '₱40 (pay) – ₱350 (reserved)',
+        'pool'         => $poolStr,
+        'weekend_diff' => '+' . $surchargeStr . ' per 12h',
+    ];
+    return $fees;
+}
+
 function faqs_published(): array
 {
     return db()->query('SELECT * FROM faqs WHERE is_published ORDER BY sort_order, id')->fetchAll();
