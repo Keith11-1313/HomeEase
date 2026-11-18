@@ -83,6 +83,33 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay?.addEventListener('click', closeDrawer);
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
     }
+
+    // ---- logout modal -------------------------------------------
+    const logoutTrigger = document.getElementById('admin-logout-trigger');
+    const logoutModal   = document.getElementById('logout-modal');
+    const logoutCancel  = document.getElementById('logout-modal-cancel');
+    if (logoutTrigger && logoutModal) {
+        const openLogout  = () => { logoutModal.removeAttribute('hidden'); if (logoutCancel) logoutCancel.focus(); };
+        const closeLogout = () => logoutModal.setAttribute('hidden', '');
+        logoutTrigger.addEventListener('click', openLogout);
+        logoutCancel?.addEventListener('click', closeLogout);
+        logoutModal.addEventListener('click', (e) => { if (e.target === logoutModal) closeLogout(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !logoutModal.hasAttribute('hidden')) closeLogout(); });
+    }
+
+    // ---- announcement delete (calendar page) --------------------
+    const delAnnounceForm = document.getElementById('del-announce-form');
+    const delAnnounceId   = document.getElementById('del-announce-id');
+    if (delAnnounceForm && delAnnounceId) {
+        document.querySelectorAll('[data-delete-announcement]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                if (await showConfirm('Delete this announcement?')) {
+                    delAnnounceId.value = btn.dataset.deleteAnnouncement;
+                    delAnnounceForm.submit();
+                }
+            });
+        });
+    }
     const photoList = document.getElementById('photo-list');
     if (photoList) {
         let dragging = null;
@@ -109,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const body = new FormData();
             body.append('action', 'reorder');
             body.append('ids', ids);
-            body.append('_csrf', csrf);
+            body.append('csrf', csrf);
             await fetch(url, { method: 'POST', body });
             dragging = null;
         });
@@ -214,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>Total</span>
                 <strong>${escapeHtml(q.currency + number(q.total))}</strong>
             </div>
-            ${q.deposit ? `<p class="quote-deposit">A refundable deposit of <strong>${escapeHtml(q.currency + number(q.deposit))}</strong> is collected separately and returned after check-out.</p>` : ''}
+            ${q.deposit ? `<p class="quote-deposit">A refundable security deposit of <strong>${escapeHtml(q.currency + number(q.deposit))}</strong> is collected separately and returned after check-out, provided there are no damages, missing items, or violations.</p>` : ''}
             <a class="btn btn--block" href="${escapeHtml(q.messenger_url)}" target="_blank" rel="noopener">Send this on Messenger</a>
             <p class="quote-note">An estimate only. Availability and the final price are confirmed in chat.</p>
         `;
@@ -244,3 +271,30 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('change', () => form.requestSubmit());
     form.requestSubmit();
 });
+
+// ---- crossfade frames (hero + showcase) ----------------------------
+(function () {
+    function initCrossfade(frame, intervalMs) {
+        const imgs = frame.querySelectorAll('img');
+        if (imgs.length < 2) return;
+        let idx = 0;
+        const advance = () => {
+            imgs[idx].classList.remove('is-active');
+            idx = (idx + 1) % imgs.length;
+            imgs[idx].classList.add('is-active');
+        };
+        let timer = setInterval(advance, intervalMs);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) { clearInterval(timer); }
+            else { timer = setInterval(advance, intervalMs); }
+        });
+    }
+
+    // hero right panel
+    const heroFrame = document.querySelector('.hero-photo-frame[data-crossfade]');
+    if (heroFrame) initCrossfade(heroFrame, 5600);
+
+    // showcase photo
+    const showcaseFrame = document.querySelector('.showcase-photo');
+    if (showcaseFrame) initCrossfade(showcaseFrame, 3800);
+})();
