@@ -40,7 +40,7 @@ function calculate_quote(array $input): array
     }
 
     $slot = (string)($input['slot'] ?? 'overnight');
-    if (!in_array($slot, ['overnight', 'daycation'], true)) {
+    if (!in_array($slot, ['overnight', 'daycation', 'flexible'], true)) {
         $slot = 'overnight';
     }
 
@@ -191,7 +191,7 @@ function messenger_message(array $quote): string
     ];
 
     if ($quote['deposit'] !== null) {
-        $lines[] = 'Refundable deposit: ' . money($quote['deposit']);
+        $lines[] = 'Security deposit (refundable): ' . money($quote['deposit']);
     }
 
     $lines[] = 'Is this slot available?';
