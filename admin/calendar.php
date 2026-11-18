@@ -129,12 +129,9 @@ include __DIR__ . '/../includes/admin_header.php';
             </div>
             <div class="row-actions">
                 <button class="btn btn-sm" type="submit">Save</button>
-                <form method="post" data-confirm="Delete this announcement?">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="action" value="delete_announcement">
-                    <input type="hidden" name="id" value="<?= (int)$a['id'] ?>">
-                    <button class="btn btn-danger btn-sm" type="submit"><?= icon('trash') ?> Delete</button>
-                </form>
+                <button class="btn btn-danger btn-sm" type="button"
+                    data-delete-announcement="<?= (int)$a['id'] ?>"
+                    data-csrf="<?= csrf_token() ?>"><?= icon('trash') ?> Delete</button>
             </div>
         </form>
     <?php endforeach; ?>
@@ -150,5 +147,11 @@ include __DIR__ . '/../includes/admin_header.php';
         <button class="btn" type="submit"><?= icon('plus') ?> Add announcement</button>
     </form>
 </div>
+
+<form id="del-announce-form" method="post" hidden>
+    <?= csrf_field() ?>
+    <input type="hidden" name="action" value="delete_announcement">
+    <input type="hidden" name="id" id="del-announce-id">
+</form>
 
 <?php include __DIR__ . '/../includes/admin_footer.php'; ?>

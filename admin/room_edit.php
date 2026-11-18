@@ -50,7 +50,7 @@ if (is_post()) {
     $submittedAmenities = $_POST['amenities'] ?? [];
     $selectedAmenities = array_values(array_unique(array_filter(
         array_map('intval', is_array($submittedAmenities) ? $submittedAmenities : []),
-        static fn(int $amenityId): bool => in_array($amenityId, array_column($amenities, 'id'), true)
+        static fn(int $amenityId): bool => in_array($amenityId, array_map('intval', array_column($amenities, 'id')), true)
     )));
 
     if ($values['name'] === '') $errors[] = 'The room name is required.';

@@ -18,11 +18,14 @@ $groups = [
         'rooms_intro' => ['Rooms intro', 'textarea'],
     ],
     'Contact & location' => [
-        'messenger_url'  => ['Messenger link', 'url'],
-        'contact_note'   => ['Contact note', 'textarea'],
-        'address'        => ['Address', 'text'],
-        'landmarks'      => ['Landmarks (comma separated)', 'text'],
-        'checkin_window' => ['Check-in window', 'text'],
+        'messenger_url'      => ['Messenger link', 'url'],
+        'contact_note'       => ['Contact note', 'textarea'],
+        'address'            => ['Address', 'text'],
+        'landmarks'          => ['Landmarks (comma separated)', 'text'],
+        'checkin_overnight'  => ['Overnight check-in window', 'text'],
+        'checkin_daycation'  => ['Daycation check-in window', 'text'],
+        'checkout_overnight' => ['Overnight check-out time', 'text'],
+        'checkout_daycation' => ['Daycation check-out time', 'text'],
     ],
     'How it works' => [
         'booking_steps'  => ['Reservation steps', 'textarea'],
@@ -76,7 +79,7 @@ if (is_post()) {
 $values = settings_all();
 
 $groupIcons = [
-    'Brand & hero'       => 'sparkle',
+    'Brand & hero'       => 'lamp',
     'Contact & location' => 'pin',
     'How it works'       => 'check-circle',
     'Calculator'         => 'calendar',

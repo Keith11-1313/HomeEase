@@ -5,6 +5,10 @@ require_once __DIR__ . '/../lib/bootstrap.php';
 require_once __DIR__ . '/../lib/auth.php';
 require_once __DIR__ . '/../includes/icons.php';
 
+if (!headers_sent()) {
+    header('X-Robots-Tag: noindex, nofollow', true);
+}
+
 if (admin_user() !== null) {
     redirect('admin/index.php');
 }
@@ -17,7 +21,7 @@ if (is_post()) {
     $email    = post('email');
     $password = (string)($_POST['password'] ?? '');
 
-    if (login_throttled()) {
+    if (login_is_throttled($email)) {
         http_response_code(429);
         $error = 'Too many attempts. Try again in 15 minutes.';
     } elseif ($email === '' || $password === '') {
@@ -25,7 +29,7 @@ if (is_post()) {
     } elseif (attempt_login($email, $password)) {
         redirect('admin/index.php');
     } else {
-        $error = 'Those credentials do not match an active account.';
+        $error = 'Invalid credentials.';
     }
 }
 
@@ -36,6 +40,7 @@ $brand = setting('brand_name', APP_NAME);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
     <title>Sign in — <?= e($brand) ?></title>
     <meta name="theme-color" content="#eae7df">
     <link rel="icon" type="image/svg+xml" href="<?= e(asset('img/favicon.svg')) ?>">
@@ -51,10 +56,14 @@ $brand = setting('brand_name', APP_NAME);
         <a class="login-brand" href="<?= e(url('index.php')) ?>">
             <?= logo_mark('login-mark', 56) ?>
             <span class="login-wordmark"><?= e($brand) ?></span>
-            <span class="login-tag">Airbnb / Transient</span>
+            <span class="login-tag">Short-stay studios</span>
         </a>
 
         <h1><?= icon('key') ?> Owner sign in</h1>
+
+        <?php foreach (take_flashes() as $flash): ?>
+            <div class="notice notice-<?= e($flash['type']) ?>"><?= e($flash['message']) ?></div>
+        <?php endforeach; ?>
 
         <?php if ($error): ?>
             <div class="notice notice-error"><?= e($error) ?></div>
