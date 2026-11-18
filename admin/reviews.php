@@ -67,7 +67,6 @@ include __DIR__ . '/../includes/admin_header.php';
     <div class="card-head">
         <div>
             <h2><?= icon('users') ?> Guest reviews</h2>
-            <p class="card-sub">Published reviews appear in the testimonials strip on the homepage. Unpublished reviews are saved but not shown to guests.</p>
         </div>
     </div>
 
