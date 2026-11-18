@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/repo.php';
+require_once __DIR__ . '/policies.php';
 
 // --- errors ---------------------------------------------------
 error_reporting(E_ALL);
