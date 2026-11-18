@@ -112,4 +112,4 @@ include __DIR__ . '/includes/public_header.php';
     </div>
 </section>
 
-<?php include __DIR__ . '/includes/public_footer.php'; ?>
+<?php $hide_footer_cta = true; include __DIR__ . '/includes/public_footer.php'; ?>

@@ -4,7 +4,7 @@ require_once __DIR__ . '/lib/bootstrap.php';
 $faqs = faqs_published();
 
 $page_title = 'FAQs';
-$page_desc  = 'Reservation, check-in, deposit, parking and pool questions answered.';
+$page_desc  = 'Reservation, booking fee, security deposit, check-in, parking and pool questions answered.';
 $active     = 'faqs';
 include __DIR__ . '/includes/public_header.php';
 ?>
@@ -12,7 +12,7 @@ include __DIR__ . '/includes/public_header.php';
 <section class="page-head wrap">
     <p class="page-kicker"><?= icon('check-circle') ?> Good to know</p>
     <h1>Before you book</h1>
-    <p class="lead">Downpayments, check-in, the deposit, parking and the pool — answered the way we answer them in chat.</p>
+    <p class="lead">Booking fees, check-in windows, security deposits, parking and the pool — answered the way we answer them in chat.</p>
 </section>
 
 <?php if ($faqs): ?>

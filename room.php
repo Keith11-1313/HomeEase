@@ -47,9 +47,33 @@ usort($slots, static fn($a, $b) => array_search($a, $slotOrder, true) <=> array_
 
 $facts = unit_fact_items($unit);
 
-$page_title = $unit['name'] . ' | ' . $unit['tagline'];
+$page_title = $unit['name'] . ($unit['tagline'] ? ' | ' . $unit['tagline'] : '');
 $page_desc  = $unit['description'] ?: setting('tagline');
 $active     = 'rooms';
+
+$room_schema = [
+    '@context' => 'https://schema.org',
+    '@type'    => 'HotelRoom',
+    'name'     => $unit['name'],
+    'description' => $unit['description'] ?: $unit['tagline'],
+    'occupancy' => [
+        '@type'    => 'QuantitativeValue',
+        'maxValue' => (int)($unit['capacity_max'] ?? 4),
+    ],
+    'bed' => $unit['bed_type'] ? $unit['bed_type'] . ' bed' : 'Bed',
+];
+if ($unit['size_sqm']) {
+    $room_schema['floorSize'] = [
+        '@type' => 'QuantitativeValue',
+        'value' => (float)$unit['size_sqm'],
+        'unitCode' => 'MTK',
+    ];
+}
+if (!empty($images[0]['url'])) {
+    $room_schema['image'] = drive_image_url($images[0]['url']);
+}
+$extra_head = '<script type="application/ld+json">' . json_encode(array_filter($room_schema), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
+
 include __DIR__ . '/includes/public_header.php';
 ?>
 
@@ -75,7 +99,7 @@ include __DIR__ . '/includes/public_header.php';
     <div class="room-head-price">
         <span>Stays from</span>
         <strong><?= e($unit['from_price'] !== null ? money($unit['from_price']) : 'Ask us') ?></strong>
-        <span>per <?= e((string)($unit['max_hours'] ?: 12)) ?> hours</span>
+        <span>per <?= e((string)($unit['max_hours'] ?: 12)) ?>h · weekday overnight, 2 pax</span>
     </div>
 </section>
 
@@ -168,8 +192,8 @@ include __DIR__ . '/includes/public_header.php';
 
         <?php if ($deposits): ?>
             <section class="reveal">
-                <h2><?= icon('shield') ?> Deposit</h2>
-                <p class="prose">A refundable security deposit is collected with the downpayment and returned after check-out, provided there are no damages, missing items or violations.</p>
+                <h2><?= icon('shield') ?> Security deposit</h2>
+                <p class="prose">A separate refundable security deposit is collected before check-in and returned after check-out, provided there are no damages, missing items or rule violations.</p>
                 <ul class="deposit-list">
                     <?php foreach ($deposits as $deposit): ?>
                         <li>
@@ -180,6 +204,14 @@ include __DIR__ . '/includes/public_header.php';
                 </ul>
             </section>
         <?php endif; ?>
+
+        <section class="reveal">
+            <h2><?= icon('shield') ?> House rules summary</h2>
+            <p class="prose">Quiet hours are strictly observed (<?= e(policy_house_rules()['quiet_hours']) ?>). No smoking, no parties, no unregistered visitors, and no pets. Valid IDs are required by building security for entry passes.</p>
+            <p style="margin-top:0.75rem;">
+                <a class="text-link" href="<?= e(url('house-rules.php')) ?>">Read all house rules <?= icon('arrow-right') ?></a>
+            </p>
+        </section>
     </div>
 
     <aside class="room-aside reveal">
@@ -247,7 +279,7 @@ include __DIR__ . '/includes/public_header.php';
 
         <div class="aside-note reveal">
             <h3>Reservations happen in chat</h3>
-            <p><?= e(setting('contact_note')) ?> A downpayment secures the slot; the balance is settled on check-in.</p>
+            <p><?= e(setting('contact_note')) ?> A <?= e(BOOKING_FEE_AMOUNT) ?> booking fee secures the slot; the remaining stay balance and refundable security deposit are settled on check-in.</p>
             <a class="text-link" href="<?= e(setting('messenger_url', 'https://m.me/')) ?>" target="_blank" rel="noopener">Open Messenger</a>
         </div>
 

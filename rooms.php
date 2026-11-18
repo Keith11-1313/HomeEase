@@ -2,6 +2,7 @@
 require_once __DIR__ . '/lib/bootstrap.php';
 
 $units     = units_published();
+$fees      = standard_fees();
 $messenger = setting('messenger_url', 'https://m.me/');
 
 $page_title = 'Rooms';
@@ -14,6 +15,38 @@ include __DIR__ . '/includes/public_header.php';
     <p class="page-kicker"><?= icon('building') ?> The rooms</p>
     <h1><?= count($units) ?> cozy studios in Fairview</h1>
     <p class="lead"><?= e(setting('rooms_intro')) ?></p>
+</section>
+
+<!-- ── Transparent Standard Fee Table ────────────────────────── -->
+<section class="wrap" style="margin-bottom:2rem;">
+    <div style="background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.25rem 1.5rem;">
+        <h2 style="font-size:1rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">
+            <?= icon('shield') ?> Transparent fee schedule
+        </h2>
+        <div style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));font-size:0.9rem;">
+            <div>
+                <span class="text-muted-sm" style="display:block;">Weekend / Holiday</span>
+                <strong><?= e($fees['weekend_diff']) ?></strong>
+            </div>
+            <div>
+                <span class="text-muted-sm" style="display:block;">Extra guest</span>
+                <strong><?= e($fees['extra_pax']) ?></strong>
+            </div>
+            <div>
+                <span class="text-muted-sm" style="display:block;">Extra hour</span>
+                <strong><?= e($fees['extra_hour']) ?></strong>
+            </div>
+            <div>
+                <span class="text-muted-sm" style="display:block;">Parking</span>
+                <strong><?= e($fees['parking']) ?></strong>
+            </div>
+            <div>
+                <span class="text-muted-sm" style="display:block;">Pool access</span>
+                <strong><?= e($fees['pool']) ?></strong>
+            </div>
+        </div>
+        <p class="text-muted-sm" style="margin-top:0.75rem;margin-bottom:0;">Base rates include 2 guests. Stated "from" rates reflect 12-hour weekday overnight stays.</p>
+    </div>
 </section>
 
 <section class="room-list">
@@ -43,7 +76,7 @@ include __DIR__ . '/includes/public_header.php';
 
                         <p class="room-entry-price">
                             <strong><?= e($unit['from_price'] !== null ? money($unit['from_price']) : 'Ask us') ?></strong>
-                            <span>from, per 12 hours</span>
+                            <span>from, per 12 hours (weekday overnight, 2 pax)</span>
                         </p>
 
                         <a class="text-link" href="<?= e($href) ?>">View room and rates <?= icon('arrow-right') ?></a>

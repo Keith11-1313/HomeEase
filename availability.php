@@ -14,7 +14,7 @@ $calendarData = [
 include __DIR__ . '/includes/public_header.php';
 ?>
 
-<main class="availability-page wrap">
+<div class="availability-page wrap">
     <p class="page-kicker"><?= icon('calendar') ?> Availability</p>
     <h1>Check availability</h1>
     <p class="lead"><?= e($page_desc) ?> This calendar is a guide, not a live reservation system. Message us to confirm.</p>
@@ -44,7 +44,7 @@ include __DIR__ . '/includes/public_header.php';
     <?php endif; ?>
 
     <p class="availability-contact">To confirm, message us <a class="btn btn--accent" href="<?= e(setting('messenger_url', 'https://m.me/')) ?>" target="_blank" rel="noopener"><?= icon('messenger') ?> Message us on Messenger</a></p>
-</main>
+</div>
 
 <script src="<?= e(asset('js/availability.js')) ?>" defer></script>
 <?php include __DIR__ . '/includes/public_footer.php'; ?>

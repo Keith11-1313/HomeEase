@@ -35,19 +35,11 @@ $photoCredits = [
 
 <footer class="site-footer">
     <div class="wrap">
-        <div class="footer-close">
-            <p class="footer-name"><?= logo_mark() ?><?= e($brand) ?></p>
-            <div class="footer-action">
-                <p>Fairview, Quezon City<br>Stay a little closer to the city.</p>
-                <a class="btn btn--quiet" href="<?= e($messenger) ?>" target="_blank" rel="noopener"><?= icon('messenger') ?> Message to check availability</a>
-            </div>
-        </div>
-
         <div class="footer-grid">
             <div>
                 <h3>Find us</h3>
-                <p><?= icon('pin') ?> <?= e(setting('address')) ?></p>
-                <p class="footer-faint"><?= e(setting('landmarks')) ?></p>
+                <p><a href="https://maps.google.com/?q=Trees+Residences+Fairview+Quezon+City" target="_blank" rel="noopener"><?= icon('pin') ?> <?= e(setting('address', 'Fairview, Quezon City')) ?></a></p>
+                <p class="footer-faint">Near SM Fairview, Ayala Fairview Terraces &amp; Robinsons Novaliches</p>
             </div>
             <div>
                 <h3>Follow</h3>
@@ -60,9 +52,8 @@ $photoCredits = [
             <div>
                 <h3>Get in touch</h3>
                 <ul class="footer-links">
+                    <li><a href="<?= e($messenger) ?>" target="_blank" rel="noopener"><?= icon('messenger') ?> Message on Facebook</a></li>
                     <li><a href="mailto:flynnscozystay@gmail.com"><?= icon('mail') ?> flynnscozystay@gmail.com</a></li>
-                    <li><span><?= icon('clock') ?> <?= e(setting('checkin_window')) ?> check-in</span></li>
-                    <li><span><?= icon('key') ?> Self check-in with lockbox</span></li>
                 </ul>
             </div>
         </div>
@@ -72,9 +63,10 @@ $photoCredits = [
             <nav aria-label="Footer">
                 <a href="<?= e(url('rooms.php')) ?>">Rooms</a><span>·</span>
                 <a href="<?= e(url('gallery.php')) ?>">Gallery</a><span>·</span>
-                <a href="<?= e(url('faq.php')) ?>">FAQs</a>
+                <a href="<?= e(url('faq.php')) ?>">FAQs</a><span>·</span>
+                <a href="<?= e(url('house-rules.php')) ?>">House rules</a><span>·</span>
+                <a href="<?= e(url('privacy.php')) ?>">Privacy</a>
             </nav>
-            <a href="<?= e(url('admin/login.php')) ?>">Owner sign in</a>
         </div>
     </div>
 </footer>

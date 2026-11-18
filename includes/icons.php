@@ -101,7 +101,7 @@ function logo_lockup(string $class = '', int $size = 42): string
         . logo_mark('brand-lockup-mark', $size)
         . '<span class="brand-lockup-text">'
         . '<span class="brand-lockup-name">' . e($brand) . '</span>'
-        . '<span class="brand-lockup-tag">Airbnb / Transient</span>'
+        . '<span class="brand-lockup-tag">Short-stay studios</span>'
         . '</span>'
         . '</span>';
 }

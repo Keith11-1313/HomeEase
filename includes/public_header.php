@@ -9,11 +9,16 @@ $active = $active ?? '';
 $messenger = setting('messenger_url', 'https://m.me/');
 
 $nav = [
-    'rooms' => ['Rooms', 'rooms.php'],
-    'gallery' => ['Gallery', 'gallery.php'],
-    'faqs' => ['FAQs', 'faq.php'],
-    'availability' => ['Availability', 'availability.php'],
+    'rooms'       => ['Rooms', 'rooms.php'],
+    'gallery'     => ['Gallery', 'gallery.php'],
+    'faqs'        => ['FAQs', 'faq.php'],
+    'availability'=> ['Availability', 'availability.php'],
+    'house-rules' => ['House rules', 'house-rules.php'],
 ];
+
+$page_full_title = $page_title === $brand ? $brand : $page_title . ' | ' . $brand;
+$current_canonical = $canonical_url ?? (BASE_URL !== '' ? BASE_URL . '/' . ltrim($_SERVER['REQUEST_URI'] ?? '', '/') : '');
+$og_image_url = $og_image ?? (BASE_URL !== '' ? BASE_URL . '/assets/img/og-cover.jpg' : '');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,9 +26,28 @@ $nav = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($page_title === $brand ? $brand : $page_title . ' | ' . $brand) ?></title>
+    <title><?= e($page_full_title) ?></title>
     <meta name="description" content="<?= e($page_desc) ?>">
     <meta name="theme-color" content="#eae7df">
+    <?php if ($current_canonical): ?>
+        <link rel="canonical" href="<?= e($current_canonical) ?>">
+    <?php endif; ?>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="<?= e($og_type ?? 'website') ?>">
+    <meta property="og:title" content="<?= e($page_full_title) ?>">
+    <meta property="og:description" content="<?= e($page_desc) ?>">
+    <meta property="og:image" content="<?= e($og_image_url) ?>">
+    <?php if ($current_canonical): ?>
+        <meta property="og:url" content="<?= e($current_canonical) ?>">
+    <?php endif; ?>
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($page_full_title) ?>">
+    <meta name="twitter:description" content="<?= e($page_desc) ?>">
+    <meta name="twitter:image" content="<?= e($og_image_url) ?>">
+
     <link rel="icon" type="image/svg+xml" href="<?= e(asset('img/favicon.svg')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,6 +56,9 @@ $nav = [
         rel="stylesheet">
     <link rel="stylesheet" href="<?= e(asset('css/site.css')) ?>">
     <script src="<?= e(asset('js/site.js')) ?>" defer></script>
+    <?php if (!empty($extra_head)): ?>
+        <?= $extra_head ?>
+    <?php endif; ?>
 </head>
 
 <body>
