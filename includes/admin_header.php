@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/icons.php';
 
+if (!headers_sent()) {
+    header('X-Robots-Tag: noindex, nofollow', true);
+}
+
 $admin = admin_user();
 $brand = setting('brand_name', APP_NAME);
 $active = $active ?? '';
@@ -10,6 +14,7 @@ $nav = [
     'amenities.php' => ['Inclusions', 'check-circle'],
     'rates.php'     => ['Rates', 'calendar'],
     'addons.php'    => ['Add-ons', 'car'],
+    'reviews.php'   => ['Reviews', 'users'],
     'faqs.php'      => ['FAQs', 'mail'],
     'calendar.php'  => ['Availability', 'calendar'],
     'settings.php'  => ['Settings', 'shield'],
@@ -21,6 +26,7 @@ $nav = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
     <title><?= e($page_title ?? 'Admin') ?> | <?= e($brand) ?></title>
     <link rel="icon" type="image/svg+xml" href="<?= e(asset('img/favicon.svg')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,7 +61,7 @@ $nav = [
                 <?= logo_mark('admin-mark', 34) ?>
                 <span class="admin-brand-text">
                     <span class="admin-brand-name"><?= e($brand) ?></span>
-                    <span class="admin-brand-tag">Airbnb / Transient</span>
+                    <span class="admin-brand-tag">Short-stay studios</span>
                 </span>
             </a>
             <!-- mobile drawer header -->
@@ -64,7 +70,7 @@ $nav = [
                     <?= logo_mark('admin-mark', 34) ?>
                     <span class="admin-brand-text">
                         <span class="admin-brand-name"><?= e($brand) ?></span>
-                        <span class="admin-brand-tag">Airbnb / Transient</span>
+                        <span class="admin-brand-tag">Short-stay studios</span>
                     </span>
                 </a>
                 <button class="admin-side-close" id="admin-side-close" aria-label="Close menu">✕</button>
@@ -80,7 +86,7 @@ $nav = [
 
             <div class="admin-side-foot">
                 <a href="<?= e(url('index.php')) ?>" target="_blank" rel="noopener">View site ↗</a>
-                <a href="<?= e(url('admin/logout.php')) ?>">Sign out</a>
+                <button type="button" id="admin-logout-trigger">Sign out</button>
             </div>
         </aside>
 
